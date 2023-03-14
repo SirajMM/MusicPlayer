@@ -23,47 +23,11 @@ class MyWidgetState extends State<MyHome> {
 
     return Container(
       padding: const EdgeInsets.all(8),
-      height: size.height,
-      width: size.width,
-      decoration: const BoxDecoration(color: Colors.white),
+      // decoration: const BoxDecoration(color: Colors.white),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: const EdgeInsets.all(0),
-            leading: IconButton(
-              onPressed: () {},
-              icon: Image.asset('asset/images/Homelogo.png'),
-            ),
-            title: Text(
-              'Blaze Player',
-              style: GoogleFonts.italianno(
-                // ignore: prefer_const_constructors
-                textStyle: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: const Color.fromARGB(176, 0, 0, 0),
-                ),
-              ),
-            ),
-            trailing: IconButton(
-              onPressed: () {
-                // ignore: non_constant_identifier_names
-                final ScaffoldState = Scaffold.of(context);
-                // ignore: unnecessary_null_comparison
-                if (ScaffoldState.isEndDrawerOpen) {
-                  // ScaffoldState.openDrawer();
-                  Navigator.pop(context);
-                } else {
-                  Home_ScreenState.drawkey.currentState?.openEndDrawer();
-                }
-              },
-              icon: const Icon(
-                Icons.format_align_right_outlined,
-                color: Colors.black,
-              ),
-            ),
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -119,7 +83,7 @@ class MyWidgetState extends State<MyHome> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          songCard(), 
+          songCard(),
           SizedBox(
             height: size.height * 0.01,
           ),
@@ -130,20 +94,27 @@ class MyWidgetState extends State<MyHome> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          Expanded(
-              child: ValueListenableBuilder(
-            valueListenable: Hive.box('favorites').listenable(),
-            builder: (context, box, child) {
-              return ListView.builder(
-                itemCount: 10,
-                // ignore: prefer_const_constructors
-                itemBuilder: (context, index) => costemListTile(
-                    titile: "Samjhavan",
-                    singer: 'Arjith Sign',
-                    cover: 'asset/images/Geena mera.jpg'),
-              );
-            },
-          )),
+          // ignore: sized_box_for_whitespace
+          Container(
+            height: size.height,
+            child: ValueListenableBuilder(
+              valueListenable: Hive.box('favorites').listenable(),
+              builder: (context, box, child) {
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 10,
+                  // ignore: prefer_const_constructors
+                  itemBuilder: (context, index) => costemListTile(
+                      titile: "Samjhavan",
+                      singer: 'Arjith Sign',
+                      cover: 'asset/images/Geena mera.jpg'),
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.07,
+          )
         ],
       ),
     );
