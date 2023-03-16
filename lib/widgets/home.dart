@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:blaze_player/screens/home_screen.dart';
-// import 'package:blaze_player/widgets/customlisttile.dart';
+import 'package:blaze_player/screens/playsreen.dart';
+import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
@@ -23,8 +23,7 @@ class MyWidgetState extends State<MyHome> {
 
     return Container(
       padding: const EdgeInsets.all(8),
-      // decoration: const BoxDecoration(color: Colors.white),
-
+      width: size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,9 +64,7 @@ class MyWidgetState extends State<MyHome> {
                 style: homeStyle,
               ),
               InkWell(
-                onTap: () {
-                  setState(() {});
-                },
+                onTap: () {},
                 child: Text(
                   'Discover >',
                   style: GoogleFonts.genos(
@@ -101,6 +98,7 @@ class MyWidgetState extends State<MyHome> {
               valueListenable: Hive.box('favorites').listenable(),
               builder: (context, box, child) {
                 return ListView.builder(
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: 10,
                   // ignore: prefer_const_constructors
@@ -124,7 +122,9 @@ class MyWidgetState extends State<MyHome> {
   // ignore: sized_box_for_whitespace
   Widget songCard() => Container(
         height: MediaQuery.of(context).size.height * 0.19,
+        width: MediaQuery.of(context).size.width,
         child: ListView.separated(
+            shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) => buildcard(),
             separatorBuilder: (context, index) => const SizedBox(
@@ -134,7 +134,11 @@ class MyWidgetState extends State<MyHome> {
       );
   Widget buildcard() => InkWell(
         onTap: () {
-          // print('hii');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PlayScreen(),
+              ));
         },
         child: Stack(children: [
           Container(
@@ -169,82 +173,149 @@ class MyWidgetState extends State<MyHome> {
       {String? titile, String? singer, String? cover, onTap}) {
     var hiveBox = Hive.box('favorites');
     final isFavorite = hiveBox.get(titile) != null;
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 80,
-            width: 80,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                image: DecorationImage(
-                    image: AssetImage(cover!), fit: BoxFit.cover)),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  titile!,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(singer!),
-              ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const PlayScreen()));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.0),
+                  image: DecorationImage(
+                      image: AssetImage(cover!), fit: BoxFit.cover)),
             ),
-          ),
-          IconButton(
-            color: Colors.red,
-            onPressed: () async {
-              ScaffoldMessenger.of(context).clearSnackBars();
-              if (isFavorite) {
-                await hiveBox.delete(titile);
-                const snackBar = SnackBar(
-                  content: Text('Removed from favorite'),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              } else {
-                await hiveBox.put(titile, cover);
-                const snackBar = SnackBar(
-                  content: Text('Added to favorite'),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-              // await hiveBox.put(titile, cover);
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titile!,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(singer!),
+                ],
+              ),
+            ),
+            IconButton(
+              color: Colors.red,
+              onPressed: () async {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                if (isFavorite) {
+                  await hiveBox.delete(titile);
+                  const snackBar = SnackBar(
+                    content: Text('Removed from favorite'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                } else {
+                  await hiveBox.put(titile, cover);
+                  const snackBar = SnackBar(
+                    content: Text('Added to favorite'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                // await hiveBox.put(titile, cover);
 
-              // ScaffoldMessenger.of(context).clearSnackBars();
-            },
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-          ),
-          IconButton(
-            onPressed: () {
-              if (isplaying) {
-                setState(() {
-                  playicon = Icons.pause;
-                  isplaying = false;
-                });
-              } else {
-                setState(() {
-                  playicon = Icons.play_arrow;
-                  isplaying = true;
-                });
-              }
-            },
-            icon: Icon(playicon),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
-          ),
-        ],
+                // ScaffoldMessenger.of(context).clearSnackBars();
+              },
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            ),
+            IconButton(
+              onPressed: () {
+                if (isplaying) {
+                  setState(() {
+                    playicon = Icons.pause;
+                    isplaying = false;
+                  });
+                } else {
+                  setState(() {
+                    playicon = Icons.play_arrow;
+                    isplaying = true;
+                  });
+                }
+              },
+              icon: Icon(playicon),
+            ),
+            PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                      value: 1,
+                      child: Row(
+                        children: const [
+                          Icon(Icons.playlist_add),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Add Toplaylist')
+                        ],
+                      )),
+                  PopupMenuItem(
+                      value: 2,
+                      child: Row(
+                        children: const [
+                          Icon(Icons.delete_outlined),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Delete')
+                        ],
+                      )),
+                ];
+              },
+            )
+
+            // showModalBottomSheet<void>(
+            //   context: context,
+            //   builder: (BuildContext context) {
+            //     return SizedBox(
+            //       height: MediaQuery.of(context).size.height,
+            //       child: Column(
+            //         // mainAxisAlignment: MainAxisAlignment.start,
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: <Widget>[
+            //           Row(
+            //             mainAxisAlignment: MainAxisAlignment.center,
+            //             children: [
+            //               InkWell(
+            //                 onTap: () => Navigator.pop(context),
+            //                 child: const Icon(Icons.arrow_drop_up),
+            //               ),
+            //             ],
+            //           ),
+            //           ListTile(
+            //             leading: Image.asset(
+            //               'asset/images/Geena mera.jpg',
+            //               height: 60,
+            //               width: 60,
+            //               fit: BoxFit.cover,
+            //             ),
+            //             title: const Text('Samjhavan'),
+            //             subtitle: const Text('Arjith Singh'),
+            //           ),
+            //           //   ListTile(
+            //           //     title: ,
+            //           //   ),
+            //         ],
+            //       ),
+            //     );
+            //   },
+            // );
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,7 @@
 // ignore_for_file: sized_box_for_whitespace, use_build_context_synchronously
-
-import 'package:blaze_player/screens/home_screen.dart';
+import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class FavScreen extends StatefulWidget {
@@ -36,11 +35,14 @@ class _FavScreenState extends State<FavScreen> {
                 icon: const Icon(
                   Icons.shuffle,
                 ),
-                label: const Text('Shuffle'),
+                label: const Text(
+                  'Shuffle',
+                ),
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 16),
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(150, 50),
-                  backgroundColor: Colors.red,
+                  backgroundColor: buttoncolor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                   ),
@@ -52,7 +54,8 @@ class _FavScreenState extends State<FavScreen> {
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 16),
                   minimumSize: const Size(150, 50),
-                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  backgroundColor: buttoncolor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                   ),
@@ -117,7 +120,7 @@ class _FavScreenState extends State<FavScreen> {
             ),
           ),
           IconButton(
-            color: Colors.red,
+            color: buttoncolor,
             onPressed: () async {
               ScaffoldMessenger.of(context).clearSnackBars();
               if (isFavorite) {
@@ -133,9 +136,7 @@ class _FavScreenState extends State<FavScreen> {
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
-              // await hiveBox.put(titile, cover);
-
-              // ScaffoldMessenger.of(context).clearSnackBars();
+            
             },
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
           ),

@@ -1,11 +1,11 @@
-// import 'dart:js';
-
+import 'package:audioplayers/audioplayers.dart';
+import 'package:blaze_player/styles/stile1.dart';
 import 'package:blaze_player/widgets/favorites.dart';
 import 'package:blaze_player/widgets/library.dart';
 import 'package:blaze_player/widgets/search.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import '../widgets/home.dart';
 
@@ -17,21 +17,11 @@ class Home_Screen extends StatefulWidget {
   State<Home_Screen> createState() => Home_ScreenState();
 }
 
-// =============== TEXT STYLES ==============
-final TextStyle homeStyle =
-    GoogleFonts.genos(fontSize: 25, fontWeight: FontWeight.w400);
+final player = AudioPlayer();
+Future<void> initPlayer() async {
+  await player.setSource(AssetSource("music.mp3"));
+}
 
-final TextStyle headingStyle = GoogleFonts.italianno(
-  fontSize: 38,
-  fontWeight: FontWeight.w600,
-  color: const Color.fromARGB(176, 0, 0, 0),
-);
-
-final TextStyle topStyle = GoogleFonts.italianno(
-  fontSize: 26,
-  fontWeight: FontWeight.w600,
-  color: const Color.fromARGB(176, 0, 0, 0),
-);
 // =============================================
 IconData playicon = Icons.play_arrow;
 bool isplaying = false;
@@ -41,30 +31,32 @@ const List<Widget> widgetOptions = <Widget>[
   SearchScreen(),
   MyLibrary(),
 ];
-const TextStyle optionStyle =
-    TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
 
 // ignore: camel_case_types
 class Home_ScreenState extends State<Home_Screen> {
   int _selectedIndex = 0;
 
   static final GlobalKey<ScaffoldState> _drawkey = GlobalKey<ScaffoldState>();
+  ScrollController listScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) => SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           key: _drawkey,
           extendBody: true,
 
           appBar: _selectedIndex == 0
               ? AppBar(
+                  backgroundColor: Colors.transparent,
                   flexibleSpace: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: <Color>[Colors.amberAccent, Colors.red])),
-                  ),
+                      //   decoration: const BoxDecoration(
+                      //       gradient: LinearGradient(
+                      //           begin: Alignment.bottomCenter,
+                      //           end: Alignment.topCenter,
+                      //           colors: <Color>[Colors.amberAccent, Colors.red])),
+
+                      ),
                   elevation: 0,
                   leading: IconButton(
                     onPressed: () {},
@@ -90,17 +82,28 @@ class Home_ScreenState extends State<Home_Screen> {
               : null,
           // ------------BODY---------------
           body: SingleChildScrollView(
+            controller: listScrollController,
             child: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Colors.amberAccent,
-                    Colors.red,
-                  ],
-                )),
-                child: widgetOptions.elementAt(_selectedIndex)),
+              // decoration: const BoxDecoration(
+              //   gradient: LinearGradient(
+              //     begin: Alignment.topRight,
+              //     end: Alignment.bottomLeft,
+              //     // stops: [
+              //     //   0.1,
+              //     //   0.4,
+              //     //   0.6,
+              //     //   0.9,
+              //     // ],
+              //     colors: [
+              //       // Colors.yellow,
+              //       // Colors.red,
+              //       Colors.indigo,
+              //       Color.fromARGB(237, 241, 35, 21),
+              //     ],
+              //   ),
+              // ),
+              child: widgetOptions.elementAt(_selectedIndex),
+            ),
           ),
 
           // /-----------BOTTOM NAVIGASTION------------
@@ -110,7 +113,47 @@ class Home_ScreenState extends State<Home_Screen> {
           endDrawer: Drawer(
             child: ListView(
               // ignore: prefer_const_literals_to_create_immutables
-              children: [const DrawerHeader(child: Text('Settings'))],
+              children: [
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 207, 202, 202)),
+                  child: Text(
+                    'Settings',
+                    style: headingStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                ListTile(
+                  onTap: () {},
+                  leading: const Icon(Icons.edit_notifications),
+                  title: const Text('Notification'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                ),
+                ListTile(
+                  onTap: () {},
+                  leading: const Icon(Icons.language_outlined),
+                  title: const Text('Language'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                ),
+                ListTile(
+                  onTap: () {},
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: const Text('Privacy Policy'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                ),
+                ListTile(
+                  onTap: () {},
+                  leading: const Icon(Icons.error_outline),
+                  title: const Text('About'),
+                ),
+                ListTile(
+                  onTap: () {
+                    SystemNavigator.pop();
+                  },
+                  leading: const Icon(Icons.logout_outlined),
+                  title: const Text('Quit'),
+                ),
+              ],
             ),
           ),
         ),
@@ -119,29 +162,18 @@ class Home_ScreenState extends State<Home_Screen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (listScrollController.hasClients) {
+        final position = listScrollController.position.minScrollExtent;
+        listScrollController.animateTo(
+          position,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
-  playButton() {
-    return IconButton(
-      onPressed: () {
-        if (isplaying) {
-          setState(() {
-            playicon = Icons.pause;
-            isplaying = false;
-          });
-        } else {
-          setState(() {
-            playicon = Icons.play_arrow;
-            isplaying = true;
-          });
-        }
-      },
-      icon: Icon(playicon),
-    );
-  }
-
-  // ---------GNav BAR---------
+  // ========== GNav BAR ========
   Widget navBar() => Padding(
         padding: const EdgeInsets.all(5.0),
         child: BlurryContainer(

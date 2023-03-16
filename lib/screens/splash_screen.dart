@@ -14,10 +14,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      gotoHome();
-      // Use the constraints here
-    });
+    initPlayer();
+    gotoHome();
+    // Use the constraints here
   }
 
   @override

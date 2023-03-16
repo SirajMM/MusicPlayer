@@ -1,4 +1,5 @@
-import 'package:blaze_player/screens/home_screen.dart';
+
+import 'package:blaze_player/styles/stile1.dart';
 import 'package:blaze_player/widgets/customlisttile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -92,12 +93,12 @@ class _SearchScreenState extends State<SearchScreen> {
             Container(
               height: size.height,
               child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) => costemListTile(
                     titile: 'Samjhavan',
                     singer: 'Arjith Singh',
                     cover: 'asset/images/Geena mera.jpg'),
-                itemCount: 5,
+                itemCount: 8,
               ),
             )
           ],
