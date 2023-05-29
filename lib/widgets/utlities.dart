@@ -1,17 +1,13 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:blaze_player/screens/home_screen.dart';
+import 'package:blaze_player/presentation/home/home_screen.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
-import '../model/db_functions.dart';
-import '../model/playlistmodel.dart';
-import '../model/songmodel.dart';
-import '../screens/functions/createplalylist.dart';
-// import '../screens/miniplayer.dart';
-// import '../screens/playsreen.dart';
-// import '../screens/search.dart';
+import '../db/functions/db_functions.dart';
+import '../db/model/playlistmodel.dart';
+import '../db/model/songmodel.dart';
 import '../styles/stile1.dart';
 
 // ================== Settings About ====================
@@ -481,3 +477,5 @@ void getLyrics(context) async {
         ]),
   );
 }
+ // endDrawer: 
+        // ),

@@ -1,55 +1,27 @@
 // ignore_for_file: sized_box_for_whitespace
-
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:blaze_player/model/mostlyplayedmodel.dart';
-import 'package:blaze_player/screens/miniplayer.dart';
+import 'package:blaze_player/application/homeprovider/home_provider.dart';
+import 'package:blaze_player/presentation/miniplayer/miniplayer.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import '../styles/stile1.dart';
-import '../widgets/customlisttile.dart';
-import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import '../../styles/stile1.dart';
+import '../../widgets/customlisttile.dart';
+import '../home/home_screen.dart';
 
-class MostlyPlayedScreen extends StatefulWidget {
+// ignore: must_be_immutable
+class MostlyPlayedScreen extends StatelessWidget {
   const MostlyPlayedScreen({super.key});
 
-  @override
-  State<MostlyPlayedScreen> createState() => _MostlyPlayedScreenState();
-}
+  // final box = MostlyPlayedBox.getInstance();
 
-class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
-  final box = MostlyPlayedBox.getInstance();
-  List<Audio> mostconvertedaudio = [];
-  @override
-  void initState() {
-    // mostSongstoAudio();
-    List<MostlyPlayedSongs> mostsong = box.values.toList();
-    int count = 0;
-    mostsong.sort((a, b) => b.count!.compareTo(a.count!));
-    for (var element in mostsong) {
-      if (element.count! > 2) {
-        mostplayedsongs.insert(count, element);
-        count++;
-      }
-    }
-    for (var element in mostplayedsongs) {
-      mostconvertedaudio.add(Audio.file(
-        element.songurl!,
-        metas: Metas(
-          title: element.songname,
-          artist: element.artist,
-          id: element.id.toString(),
-        ),
-      ));
-    }
-    super.initState();
-  }
-
-  List<MostlyPlayedSongs> mostplayedsongs = [];
+  // List<Audio> mostconvertedaudio = [];
+  // List<MostlyPlayedSongs> mostplayedsongs = [];
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    Provider.of<HomeProvider>(context, listen: true).mostPlayedConvertAudio();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -65,10 +37,9 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
         physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10),
-          child: ValueListenableBuilder(
-            valueListenable: box.listenable(),
+          child: Consumer<HomeProvider>(
             builder: (context, value, child) {
-              return mostplayedsongs.isNotEmpty
+              return value.mostplayedsongs.isNotEmpty
                   ? ListView.separated(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -76,17 +47,17 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
                         onTap: () {
                           audioPlayer1.open(
                               Playlist(
-                                audios: mostconvertedaudio,
+                                audios: value.mostconvertedaudio,
                                 startIndex: index,
                               ),
                               showNotification: true);
                         },
                         child: costemListTile(
-                          titile: mostplayedsongs[index].songname,
-                          singer: mostplayedsongs[index].artist,
+                          titile: value.mostplayedsongs[index].songname,
+                          singer: value.mostplayedsongs[index].artist,
                           context: context,
                           cover: QueryArtworkWidget(
-                            id: mostplayedsongs[index].id!,
+                            id: value.mostplayedsongs[index].id!,
                             type: ArtworkType.AUDIO,
                             artworkHeight: size.height * 0.08,
                             artworkWidth: size.height * 0.08,
@@ -109,8 +80,8 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
                       separatorBuilder: (context, index) => const SizedBox(
                         height: 10,
                       ),
-                      itemCount: mostplayedsongs.length < 10
-                          ? mostplayedsongs.length
+                      itemCount: value.mostplayedsongs.length < 10
+                          ? value.mostplayedsongs.length
                           : 10,
                     )
                   : Container(

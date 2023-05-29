@@ -27,3 +27,5 @@ class FavBox {
     return _box ??= Hive.box('favorites');
   }
 }
+
+

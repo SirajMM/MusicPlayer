@@ -1,19 +1,16 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:blaze_player/screens/home_screen.dart';
-import 'package:blaze_player/screens/currentplayingscreen.dart';
+import 'package:blaze_player/presentation/home/home_screen.dart';
+import 'package:blaze_player/presentation/nowplaying/currentplayingscreen.dart';
 import 'package:flutter/cupertino.dart';
-// import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
-
-import '../styles/stile1.dart';
+import '../../styles/stile1.dart';
 
 class MiniPlayer extends StatefulWidget {
   const MiniPlayer({super.key});
   static int? index = 0;
-  // static ValueNotifier<int> enteredvalue = ValueNotifier<int>(index!);
 
   @override
   State<MiniPlayer> createState() => _MiniPlayerState();
@@ -24,6 +21,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
   Duration position = Duration.zero;
   @override
   Widget build(BuildContext context) {
+    bool clickNext = true;
     var rheight = MediaQuery.of(context).size.height;
     return audioPlayer1.builderCurrent(
       builder: (context, playing) {
@@ -113,8 +111,12 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         player: audioPlayer1,
                         builder: (context, isPlaying) => Wrap(children: [
                           IconButton(
-                              onPressed: () {
-                                audioPlayer1.previous();
+                              onPressed: () async {
+                                if (clickNext == true) {
+                                  clickNext == false;
+                                  await audioPlayer1.previous();
+                                  clickNext == true;
+                                }
                               },
                               icon: const Icon(Icons.skip_previous)),
                           IconButton(
@@ -128,8 +130,12 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   ? Icons.pause
                                   : Icons.play_arrow)),
                           IconButton(
-                              onPressed: () {
-                                audioPlayer1.next();
+                              onPressed: () async {
+                                if (clickNext == true) {
+                                  clickNext == false;
+                                  await audioPlayer1.next();
+                                  clickNext == true;
+                                }
                               },
                               icon: const Icon(Icons.skip_next)),
                         ]),

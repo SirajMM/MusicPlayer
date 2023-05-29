@@ -1,37 +1,29 @@
-// ignore_for_file: avoid_unnecessary_containers, unnecessary_null_comparison
+// ignore_for_file: avoid_unnecessary_containers, unnecessary_null_comparison, must_be_immutable
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:blaze_player/model/playlistmodel.dart';
-import 'package:blaze_player/screens/playlistfullsongs.dart';
+import 'package:blaze_player/application/homeprovider/home_provider.dart';
+import 'package:blaze_player/presentation/playlistsongs/playlistfullsongs.dart';
 import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'functions/createplalylist.dart';
-import 'miniplayer.dart';
+import 'package:provider/provider.dart';
+import '../../db/functions/db_functions.dart';
+import '../miniplayer/miniplayer.dart';
 
-class MyLibrary extends StatefulWidget {
-  const MyLibrary({
+class MyLibrary extends StatelessWidget {
+  MyLibrary({
     super.key,
   });
 
-  @override
-  State<MyLibrary> createState() => _MyLibraryState();
-}
-
-class _MyLibraryState extends State<MyLibrary> {
   final TextEditingController textcontroller = TextEditingController();
-  final playlistbox = PlaylistBox.getInstance();
-  final List<PlaylistModel> playlistssongs = [];
-  late List<PlayListDb> playlistsong = playlistbox.values.toList();
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<HomeProvider>(context, listen: false).viewAllPlaylists();
+    });
     return Scaffold(
-      // ignore: sized_box_for_whitespace
-      body: Container(
+      body: SizedBox(
         height: size.height,
         width: size.width,
         child: SingleChildScrollView(
@@ -49,7 +41,7 @@ class _MyLibraryState extends State<MyLibrary> {
               Container(
                 padding: const EdgeInsets.all(8),
                 child: InkWell(
-                  onTap: () async => showdialogebox(),
+                  onTap: () async => showdialogebox(context),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -81,27 +73,19 @@ class _MyLibraryState extends State<MyLibrary> {
               ),
               // ========= PLAYLIST =========
 
-              ValueListenableBuilder<Box<PlayListDb>>(
-                valueListenable: playlistbox.listenable(),
-                builder: (context, playlistsongs, child) {
-                  List<PlayListDb> playlistsongdb =
-                      playlistsongs.values.toList();
-
-                  return Container(
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: playlistsongdb.length,
-                      itemBuilder: (context, index) => playList(
-                        playlistsongdb[index].playlistname,
-                        '${playlistsongdb[index].playlistsongs!.length} Songs',
-                        'asset/images/pop.png',
-                        index,
-                      ),
-                    ),
-                  );
-                },
-              )
+              Consumer<HomeProvider>(builder: (context, value, child) {
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: value.playlistsongdb.length,
+                  itemBuilder: (context, index) => playList(
+                      value.playlistsongdb[index].playlistname,
+                      '${value.playlistsongdb[index].playlistsongs!.length} Songs',
+                      'asset/images/pop.png',
+                      index,
+                      context),
+                );
+              })
             ],
           ),
         ),
@@ -111,11 +95,7 @@ class _MyLibraryState extends State<MyLibrary> {
   }
 
   playList(
-    String? title,
-    String? subtitle,
-    String? cover,
-    int? index,
-  ) {
+      String? title, String? subtitle, String? cover, int? index, context) {
     var size = MediaQuery.of(context).size;
     return Container(
       padding: const EdgeInsets.all(8),
@@ -160,10 +140,10 @@ class _MyLibraryState extends State<MyLibrary> {
                   PopupMenuButton(
                     itemBuilder: (context) {
                       return [
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 1,
                           child: Row(
-                            children: const [
+                            children: [
                               Icon(Icons.edit_note),
                               SizedBox(
                                 width: 10,
@@ -172,10 +152,10 @@ class _MyLibraryState extends State<MyLibrary> {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 2,
                           child: Row(
-                            children: const [
+                            children: [
                               Icon(Icons.delete_outline),
                               SizedBox(
                                 width: 10,
@@ -255,7 +235,20 @@ class _MyLibraryState extends State<MyLibrary> {
                                 TextButton(
                                   onPressed: () {
                                     deleteplaylist(index!);
+
                                     Navigator.pop(context, 'Delete');
+                                    Provider.of<HomeProvider>(context,
+                                            listen: false)
+                                        .viewAllPlaylists();
+                                    const snackbar = SnackBar(
+                                      content: Text('Playlist deleted '),
+                                      dismissDirection: DismissDirection.down,
+                                      behavior: SnackBarBehavior.floating,
+                                      elevation: 30,
+                                      duration: Duration(milliseconds: 500),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackbar);
                                   },
                                   child: Text(
                                     'Delete',
@@ -279,7 +272,7 @@ class _MyLibraryState extends State<MyLibrary> {
     );
   }
 
-  showdialogebox() {
+  showdialogebox(context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -319,6 +312,9 @@ class _MyLibraryState extends State<MyLibrary> {
                 ).show(context);
               } else {
                 createplaylist(textcontroller.text.trim(), context);
+                Provider.of<HomeProvider>(context, listen: false)
+                    .viewAllPlaylists();
+
                 Navigator.pop(context, 'Create');
                 textcontroller.clear();
               }

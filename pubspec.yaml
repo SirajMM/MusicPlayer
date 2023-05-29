@@ -55,6 +55,10 @@ dependencies:
   text_scroll: ^0.2.0
   http: ^0.13.5
   avatar_glow: ^2.0.2
+  provider: ^6.0.5
+  iconsax: ^0.0.8
+  lottie: ^2.3.2
+  carbon_icons: ^0.0.1+2
   # flutter_shazam_kit: ^1.0.2
 
 

@@ -1,17 +1,15 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:blaze_player/screens/functions/addtofav.dart';
+import 'package:blaze_player/application/homeprovider/home_provider.dart';
 import 'package:blaze_player/widgets/utlities.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-// import 'package:palette_generator/palette_generator.dart';
+import 'package:provider/provider.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-
-import '../model/songmodel.dart';
-import '../styles/stile1.dart';
-// import 'package:flutter/src/widgets/framework.dart';
-// import 'package:flutter/src/widgets/placeholder.dart';
+import '../../db/functions/db_functions.dart';
+import '../../db/model/songmodel.dart';
+import '../../styles/stile1.dart';
 
 class CurrentPlayingScreen extends StatefulWidget {
   const CurrentPlayingScreen({super.key, required this.player});
@@ -26,8 +24,6 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
   late final AnimationController _animationController =
       AnimationController(vsync: this, duration: const Duration(seconds: 6));
 
-  // ValueNotifier<PaletteGenerator?> paletteGeneratorNotifier =
-  //     ValueNotifier(null);
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   bool isPlaying = true;
@@ -71,6 +67,7 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
 
   @override
   Widget build(BuildContext context) {
+    bool clickNext = true;
     final rheight = MediaQuery.of(context).size.height;
     final rwidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -272,7 +269,10 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                       if (checkFavourite(
                           int.parse(playing.audio.audio.metas.id!),
                           BuildContext)) {
-                        addToFavorite(int.parse(playing.audio.audio.metas.id!));
+                        Provider.of<HomeProvider>(context).addToFavorite(
+                            int.parse(playing.audio.audio.metas.id!), context);
+                        // addToFavorite(
+                        //     int.parse(playing.audio.audio.metas.id!), context);
 
                         final snackBar = SnackBar(
                           backgroundColor: Colors.white,
@@ -301,10 +301,10 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                           int.parse(playing.audio.audio.metas.id!),
                           BuildContext)) {
                         removeFav(int.parse(playing.audio.audio.metas.id!));
-                        final snackBar = SnackBar(
+                        const snackBar = SnackBar(
                           backgroundColor: Colors.white,
                           content: Row(
-                            children: const [
+                            children: [
                               Text(
                                 'Removed favorite ',
                                 style: TextStyle(color: Colors.black),
@@ -321,7 +321,7 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                           dismissDirection: DismissDirection.down,
                           behavior: SnackBarBehavior.floating,
                           elevation: 30,
-                          duration: const Duration(seconds: 1),
+                          duration: Duration(seconds: 1),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
@@ -348,7 +348,11 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                 children: [
                   IconButton(
                       onPressed: () async {
-                        await widget.player.previous();
+                        if (clickNext == true) {
+                          clickNext == false;
+                          await widget.player.previous();
+                          clickNext == true;
+                        }
                       },
                       icon: const Icon(
                         Icons.skip_previous_rounded,
@@ -374,7 +378,11 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                   ),
                   IconButton(
                       onPressed: () async {
-                        await widget.player.next();
+                        if (clickNext == true) {
+                          clickNext == false;
+                          await widget.player.next();
+                          clickNext == true;
+                        }
                       },
                       icon: const Icon(
                         Icons.skip_next_rounded,

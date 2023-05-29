@@ -1,5 +1,5 @@
-import 'package:blaze_player/model/songmodel.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'songmodel.dart';
 part 'playlistmodel.g.dart';
 
 @HiveType(typeId: 2)

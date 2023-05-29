@@ -1,13 +1,16 @@
-import 'package:blaze_player/model/songmodel.dart';
-import 'package:blaze_player/screens/splash_screen.dart';
+import 'package:blaze_player/application/homeprovider/home_provider.dart';
+import 'package:blaze_player/application/splash_provider/splash_provider.dart';
+import 'package:blaze_player/presentation/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'model/db_functions.dart';
-import 'model/favoritemodel.dart';
-import 'model/mostlyplayedmodel.dart';
-import 'model/playlistmodel.dart';
-import 'model/recentlyplayedmodel.dart';
+import 'package:provider/provider.dart';
+import 'db/functions/db_functions.dart';
+import 'db/model/favoritemodel.dart';
+import 'db/model/mostlyplayedmodel.dart';
+import 'db/model/playlistmodel.dart';
+import 'db/model/recentlyplayedmodel.dart';
+import 'db/model/songmodel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +34,21 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => SplashProvider(),
+        ),
+        ChangeNotifierProvider(create: (context) => HomeProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(foregroundColor: Colors.black),
+          useMaterial3: true,
+        ),
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }
