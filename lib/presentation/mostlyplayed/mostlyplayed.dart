@@ -3,6 +3,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:blaze_player/application/homeprovider/home_provider.dart';
 import 'package:blaze_player/presentation/miniplayer/miniplayer.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import '../../styles/stile1.dart';
@@ -85,11 +86,19 @@ class MostlyPlayedScreen extends StatelessWidget {
                           : 10,
                     )
                   : Container(
-                      height: size.height,
+                      height: size.width * 1.5,
                       child: Center(
-                        child: Text(
-                          'No songs found',
-                          style: homeStyle,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.network(
+                                'https://assets6.lottiefiles.com/packages/lf20_9pdquWhGGG.json'),
+                            Text(
+                              'No songs found',
+                              style: homeStyle,
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -97,7 +106,7 @@ class MostlyPlayedScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 }

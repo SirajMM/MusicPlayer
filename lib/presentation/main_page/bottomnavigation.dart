@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import '../../styles/stile1.dart';
@@ -37,22 +38,20 @@ class Bottomnav extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
                 selectedIndex: newIndex,
                 onTabChange: (index) => indexChangeNotifier.value = index,
-
-                // ignore: prefer_const_literals_to_create_immutables
-                tabs: [
-                  const GButton(
-                    icon: Icons.home,
+                tabs: const [
+                  GButton(
+                    icon: CupertinoIcons.home,
                     text: 'Home',
                   ),
-                  const GButton(
+                  GButton(
                     icon: Icons.favorite_border,
                     text: 'Favorite',
                   ),
-                  const GButton(
-                    icon: Icons.search,
+                  GButton(
+                    icon: CupertinoIcons.search,
                     text: 'Search',
                   ),
-                  const GButton(
+                  GButton(
                     icon: Icons.playlist_play,
                     text: 'Library',
                   ),
@@ -61,22 +60,7 @@ class Bottomnav extends StatelessWidget {
             ),
           );
         },
-        // ================== APPBAR =================
-
-        // ===============DRAWER=======================
-
-        // body: widgetOptions.elementAt(selectedIndex),
-
-        // =============== BOTTOM NAVIGATION BAR =================
-        // bottomNavigationBar: navBar(),
       ),
     );
   }
-
-  // Widget navBar() =>
-  // void onItemTapped(int index) {
-  //   setState(() {
-  //     selectedIndex = index;
-  //   });
-  // }
 }

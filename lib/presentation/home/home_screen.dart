@@ -33,7 +33,6 @@ class HomePage extends StatelessWidget {
     final _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       key: _scaffoldKey,
-      // backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -59,7 +58,8 @@ class HomePage extends StatelessWidget {
               _scaffoldKey.currentState?.openEndDrawer();
             },
             icon: const Icon(
-              CupertinoIcons.text_alignright,
+              Iconsax.menu_1,
+              size: 28,
             ),
           )
         ],
@@ -132,7 +132,7 @@ class HomePage extends StatelessWidget {
                                   builder: (context) => CurrentPlayingScreen(
                                       player: audioPlayer1)));
                         },
-                        icon: const Icon(Icons.play_arrow),
+                        icon: const Icon(Iconsax.play5),
                         label: const Text('Play all'))
                   ],
                 ),
@@ -190,60 +190,12 @@ class HomePage extends StatelessWidget {
                         itemCount: allDbSongs.length);
                   },
                 )
-
-                // ValueListenableBuilder<Box<Songs>>(
-                //   valueListenable: songbox.listenable(),
-                //   builder: (context, Box<Songs> allsongbox, child) {
-                //     List<Songs> allDbSongs = allsongbox.values.toList();
-
-                //     return ListView.separated(
-                //         physics: const NeverScrollableScrollPhysics(),
-                //         shrinkWrap: true,
-                //         itemBuilder: (context, index) {
-                //           return costemListTile(
-                //               alldbsongs: allDbSongs,
-                //               index: index,
-                //               titile: allDbSongs[index].songname,
-                //               mostplayedsong: mostplayedsong,
-                //               singer: allDbSongs[index].artist == '<unknown>'
-                //                   ? 'Artist not found'
-                //                   : allDbSongs[index].artist,
-                //               playingitem: allDbSongs[index],
-                //               cover: ClipRect(
-                //                 child: QueryArtworkWidget(
-                //                     nullArtworkWidget: Container(
-                //                       height: rheight * 0.08,
-                //                       width: rheight * 0.08,
-                //                       decoration: const BoxDecoration(
-                //                           borderRadius: BorderRadius.all(
-                //                               Radius.circular(15)),
-                //                           image: DecorationImage(
-                //                               fit: BoxFit.cover,
-                //                               image: AssetImage(
-                //                                   'asset/images/moosic.jpg'))),
-                //                     ),
-                //                     artworkBorder: const BorderRadius.all(
-                //                         Radius.circular(16)),
-                //                     artworkHeight: rheight * 0.08,
-                //                     artworkWidth: rheight * 0.08,
-                //                     artworkFit: BoxFit.cover,
-                //                     id: allDbSongs[index].id!,
-                //                     type: ArtworkType.AUDIO),
-                //               ),
-                //               context: context);
-                //         },
-                //         separatorBuilder: (context, index) => SizedBox(
-                //               height: rheight * 0.01,
-                //             ),
-                //         itemCount: allDbSongs.length);
-                //   },
-                // )
               ],
             ),
           ),
         ),
       ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 
@@ -377,98 +329,13 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          PopupMenuItem(
-            value: 2,
-            child: Row(
-              children: [
-                checkFavourite(songs, BuildContext)
-                    ? const Icon(Icons.favorite_outline)
-                    : Icon(
-                        Icons.favorite,
-                        color: buttoncolor,
-                      ),
-                const SizedBox(
-                  width: 10,
-                ),
-                checkFavourite(songs, BuildContext)
-                    ? const Text('Add to Favorite')
-                    : const Text('Remove')
-              ],
-            ),
-          ),
         ];
-      },
-      onSelected: (value) async {
-        switch (value) {
-          case 1:
-            // ========== BOTTOMSHEET ===============
-
-            break;
-          case 2:
-            ScaffoldMessenger.of(context).clearSnackBars();
-            if (checkFavourite(songs, BuildContext)) {
-              Provider.of<HomeProvider>(context, listen: false)
-                  .addToFavorite(songs, context);
-              // addToFavorite(songs, context);
-              final snackBar = SnackBar(
-                content: Row(
-                  children: [
-                    const Text('Added to favorite '),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Icon(
-                      Icons.favorite,
-                      color: buttoncolor,
-                    )
-                  ],
-                ),
-                dismissDirection: DismissDirection.down,
-                behavior: SnackBarBehavior.floating,
-                elevation: 30,
-                duration: const Duration(seconds: 1),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            } else if (!checkFavourite(songs, BuildContext)) {
-              removeFav(songs);
-              const snackBar = SnackBar(
-                content: Row(
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: [
-                    Text('Removed from favourite'),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Icon(
-                      Icons.favorite_outline,
-                      color: Colors.white,
-                    )
-                  ],
-                ),
-                dismissDirection: DismissDirection.down,
-                behavior: SnackBarBehavior.floating,
-                elevation: 30,
-                duration: Duration(seconds: 1),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-
-            break;
-        }
       },
     );
   }
 }
 
-final alldbsongs = SongBox.getInstance();
-
-final songbox = SongBox.getInstance();
-
-List<Songs> dbsongs = alldbsongs.values.toList();
-final OnAudioQuery _audioQuery = OnAudioQuery();
-
 final AssetsAudioPlayer audioPlayer1 = AssetsAudioPlayer.withId('0');
 
 final List<MostlyPlayedSongs> mostplayedsong =
     mostlyplayedboxopen.values.toList();
-List<MostlyPlayedSongs> mostfulllist = [];

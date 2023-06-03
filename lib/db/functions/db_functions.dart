@@ -64,8 +64,6 @@ addPlayedSongsCount(MostlyPlayedSongs song, int index) {
 }
 // =============== Favourite ==================
 
-
-
 bool checkFavourite(int? songId, buildContext) {
   List<FavSongs> favouritesongs = [];
   final _box = SongBox.getInstance();
@@ -84,19 +82,6 @@ bool checkFavourite(int? songId, buildContext) {
   bool isPresent =
       favouritesongs.where((element) => element.id == value.id).isEmpty;
   return isPresent;
-}
-
-Future<void> removeFav(int songId) async {
-  final favbox = FavBox.getInstance();
-  List<FavSongs> favsongs = favbox.values.toList();
-  int currentindex = favsongs.indexWhere((element) => element.id == songId);
-  if (currentindex >= 0) {
-    await favsongsdb.deleteAt(currentindex);
-  }
-}
-
-deletefav(int index, BuildContext context) async {
-  await favsongsdb.deleteAt(favsongsdb.length - index - 1);
 }
 
 // ============ play list ====================
@@ -139,41 +124,30 @@ editeplaylist(int index, String name) async {
           playlistsongs: playlistsong[index].playlistsongs));
 }
 
-addToPlaylist(int index, playlistsongs) {
-  final songbox = SongBox.getInstance();
-  final playbox = PlaylistBox.getInstance();
-
-  PlayListDb? playsongs = playbox.getAt(index);
-  List<Songs> playsongdb = playsongs!.playlistsongs!;
-  List<Songs> songdb = songbox.values.toList();
-  bool isThere = playsongdb.any((element) => element.id == songdb[index].id);
-
-  if (!isThere) {
-    playsongdb.add(
-      Songs(
-          songname: songdb[index].songname,
-          artist: songdb[index].artist,
-          duration: songdb[index].duration,
-          songurl: songdb[index].songurl,
-          id: songdb[index].id),
-    );
-  }
-  playbox.putAt(index,
-      PlayListDb(playlistname: playlistsongs, playlistsongs: playsongdb));
-}
-
 // ========= to fetch the lyrics from api =============
 
 Future fetchLyrics(String songName, String artistName) async {
   const apiKey = '1255cecba5b27aad3ef72022b0c74cae';
   final response = await http.get(Uri.parse(
       'https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?apikey=$apiKey&q_track=$songName&q_artist=$artistName'));
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200 || response.statusCode == 201) {
     final lyricsResponse = jsonDecode(response.body);
+
     final lyrics = lyricsResponse['message']['body']['lyrics']['lyrics_body'];
     return lyrics;
   } else {
     const text = Text('Failed to fetch lyrics');
     return text;
   }
+}
+
+bool checkSongOnplaylist(index, playlistindex) {
+  List<Songs> allSongs = SongBox.getInstance().values.toList();
+  List<PlayListDb> playlist = PlaylistBox.getInstance().values.toList();
+  List<Songs> playlistSongs = playlist[playlistindex].playlistsongs!;
+
+  bool contains = playlistSongs
+      .where((element) => element.songname == allSongs[index].songname)
+      .isEmpty;
+  return contains;
 }

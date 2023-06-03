@@ -7,7 +7,6 @@ import 'package:blaze_player/styles/stile1.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
@@ -18,8 +17,6 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-Map isplayingMap = {};
-
 TextEditingController _searchController = TextEditingController();
 
 class _SearchScreenState extends State<SearchScreen> {
@@ -27,7 +24,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     var rheight = MediaQuery.of(context).size.height;
     var rwidth = MediaQuery.of(context).size.width;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<HomeProvider>(context, listen: false).serchConvertAudio();
+    });
     return Scaffold(
+     
       body: SizedBox(
         height: rheight,
         child: SingleChildScrollView(
@@ -35,10 +36,6 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Consumer<HomeProvider>(builder: (context, value, child) {
-              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                Provider.of<HomeProvider>(context, listen: false)
-                    .searchConvertAudio;
-              });
               return Column(
                 children: [
                   Padding(
@@ -67,16 +64,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             onPressed: () {
                               if (_searchController.text.isEmpty) {
                                 FocusManager.instance.primaryFocus?.unfocus();
-                                Provider.of<HomeProvider>(context,
-                                        listen: false)
-                                    .convertAudios
-                                    .clear();
                               } else {
                                 _searchController.clear();
-                                Provider.of<HomeProvider>(context,
-                                        listen: false)
-                                    .convertAudios
-                                    .clear();
                               }
                             }),
                         prefixIcon: const Icon(CupertinoIcons.search),
@@ -95,9 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ? ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: Provider.of<HomeProvider>(context)
-                              .convertAudios
-                              .length,
+                          itemCount: value.searchList.length,
                           itemBuilder: (context, index) => costemListTile(
                               titile: value.searchList[index].songname,
                               singer: value.searchList[index].artist,
@@ -110,12 +97,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         )
                       : Container(
                           height: rwidth * 1,
+                          width: rwidth,
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Lottie.network(
-                                  'https://assets8.lottiefiles.com/packages/lf20_uqfbsoei.json',
+                              Image.asset('asset/images/searchnotfound.gif',
                                   height: rwidth * 0.8),
                               Text(
                                 "No match Found!",
@@ -130,7 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 }
@@ -210,30 +197,6 @@ Widget costemListTile(
           const SizedBox(
             width: 10,
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     setState(() {
-          //       isPlaying = !isPlaying;
-          //       isplayingMap[index] = isPlaying;
-          //     });
-          //     if (isPlaying) {
-          //       audioPlayer1.open(
-          //           Playlist(
-          //               audios:
-          //                   Provider.of<HomeProvider>(context).convertAudios,
-          //               startIndex: index),
-          //           showNotification: true,
-          //           headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
-          //           loopMode: LoopMode.playlist);
-          //       audioPlayer1.play();
-          //     } else {
-          //       audioPlayer1.pause();
-          //     }
-          //   },
-          //   icon: (isPlaying)
-          //       ? const Icon(Icons.pause)
-          //       : const Icon(Icons.play_arrow),
-          // ),
           const SizedBox(
             width: 10,
           ),

@@ -8,17 +8,15 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
 import '../../styles/stile1.dart';
 
-class MiniPlayer extends StatefulWidget {
-  const MiniPlayer({super.key});
+// ignore: must_be_immutable
+class MiniPlayer extends StatelessWidget {
+  MiniPlayer({super.key});
   static int? index = 0;
 
-  @override
-  State<MiniPlayer> createState() => _MiniPlayerState();
-}
-
-class _MiniPlayerState extends State<MiniPlayer> {
   Duration duration = Duration.zero;
+
   Duration position = Duration.zero;
+
   @override
   Widget build(BuildContext context) {
     bool clickNext = true;
@@ -44,8 +42,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      // Colors.transparent,
-                      // Color.fromARGB(255, 102, 3, 44),
                       Colors.black.withOpacity(.6),
                       Colors.white60,
                     ],
@@ -122,9 +118,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           IconButton(
                               onPressed: () {
                                 audioPlayer1.playOrPause();
-                                setState(() {
-                                  isPlaying != isPlaying;
-                                });
                               },
                               icon: Icon((isPlaying)
                                   ? Icons.pause

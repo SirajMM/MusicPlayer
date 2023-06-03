@@ -7,6 +7,7 @@ import 'package:blaze_player/presentation/miniplayer/miniplayer.dart';
 import 'package:blaze_player/styles/stile1.dart';
 import 'package:blaze_player/widgets/customlisttile.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import '../home/home_screen.dart';
@@ -48,12 +49,11 @@ class RecentlyPlayedScreen extends StatelessWidget {
                 ),
                 Consumer<HomeProvider>(builder: (context, value, child) {
                   log(value.recentsongs.toString());
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => value
-                            .recentsongs.isNotEmpty
-                        ? GestureDetector(
+                  return value.recentsongs.isNotEmpty
+                      ? ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
                               audioPlayer1.open(
                                 Playlist(
@@ -91,25 +91,38 @@ class RecentlyPlayedScreen extends StatelessWidget {
                               ),
                               // index: index,
                             ),
-                          )
-                        : Text(
-                            'No songs found',
-                            style: homeStyle,
                           ),
-                    itemCount: value.recentsongs.length <= 10
-                        ? value.recentsongs.length
-                        : 10,
-                    separatorBuilder: (context, index) => const SizedBox(
-                      height: 10,
-                    ),
-                  );
+                          itemCount: value.recentsongs.length <= 10
+                              ? value.recentsongs.length
+                              : 10,
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                        )
+                      : Container(
+                          height: size.width * 1.5,
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.network(
+                                    'https://assets6.lottiefiles.com/packages/lf20_9pdquWhGGG.json'),
+                                Text(
+                                  'No songs found',
+                                  style: homeStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
                 })
               ],
             ),
           ),
         ),
       ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 }

@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_final_fields, no_leading_underscores_for_local_identifiers
 import 'dart:developer';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
 import '../../db/functions/db_functions.dart';
 import '../../db/model/favoritemodel.dart';
 import '../../db/model/mostlyplayedmodel.dart';
-import '../../db/model/playlistmodel.dart';
 import '../../db/model/recentlyplayedmodel.dart';
 import '../../db/model/songmodel.dart';
 import '../../presentation/home/home_screen.dart';
@@ -14,11 +14,10 @@ class HomeProvider extends ChangeNotifier {
   List<Audio> _convertAudios = [];
   bool _isShuffle = false;
   final _box = MostlyPlayedBox.getInstance();
-  List<PlayListDb> playlistsongdb = [];
-  List<Songs> playsong = [];
+
   List<Songs> allSongs = [];
   List<Songs> searchList = [];
-  List<Audio> _plalistSongsConvertAudio = [];
+
   List<Audio> _mostconvertedaudio = [];
   List<Audio> searchConvertAudio = [];
   List<MostlyPlayedSongs> _mostplayedsongs = [];
@@ -27,8 +26,6 @@ class HomeProvider extends ChangeNotifier {
   List<FavSongs> _favorites = [];
   List<RecentlyPlayedSongs> _recentsongs = [];
   List<Songs>? dbsongs;
-// final songbox = SongBox.getInstance();
-// List<Songs> nextlist = List<Songs>.from(dbsongs);
 
   List<RecentlyPlayedSongs> get recentsongs => _recentsongs;
   List<MostlyPlayedSongs> get mostplayedsongs => _mostplayedsongs;
@@ -37,7 +34,7 @@ class HomeProvider extends ChangeNotifier {
   List<Audio> get recentAudio => _recentAudio;
   List<FavSongs> get favorites => _favorites;
   List<Audio> get favsongs => _favsongs;
-  List<Audio> get plalistSongsConvertAudio => _plalistSongsConvertAudio;
+
   get isShuffle => _isShuffle;
 
   void isSongPlaying(int index) {
@@ -83,7 +80,6 @@ class HomeProvider extends ChangeNotifier {
         ),
       ));
     }
-    // notifyListeners();
   }
 
   void recentSongdstoAudio() {
@@ -141,6 +137,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   void addToFavorite(int id, context) async {
+    ScaffoldMessenger.of(context).clearSnackBars();
     List<Songs> _dbSongs = SongBox.getInstance().values.toList();
 
     List<FavSongs> favoritesongs = favsongsdb.values.toList();
@@ -154,19 +151,68 @@ class HomeProvider extends ChangeNotifier {
           duration: song.duration,
           songurl: song.songurl,
           id: song.id));
+      final snackBar = SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 30,
+          duration: const Duration(milliseconds: 500),
+          content: Row(
+            children: [
+              const Text('Added To Favourite'),
+              const SizedBox(
+                width: 10,
+              ),
+              Icon(
+                Icons.favorite,
+                color: buttoncolor,
+              )
+            ],
+          ));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       int currentindex =
           favoritesongs.indexWhere((element) => element.id == id);
       await favsongsdb.deleteAt(currentindex);
+      const snackBar = SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 30,
+          duration: Duration(milliseconds: 500),
+          content: Row(
+            children: [
+              Text(' Removed From Favourite'),
+              SizedBox(
+                width: 10,
+              ),
+              Icon(
+                Icons.favorite_border_outlined,
+                color: Colors.white,
+              )
+            ],
+          ));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    notifyListeners();
+  }
+
+  void serchConvertAudio() {
+    allSongs = SongBox.getInstance().values.toList();
+    searchList = List<Songs>.from(allSongs);
+    for (var element in searchList) {
+      searchConvertAudio.add(Audio.file(
+        element.songurl.toString(),
+        metas: Metas(
+          artist: element.artist,
+          title: element.songname,
+          id: element.id.toString(),
+        ),
+      ));
     }
     notifyListeners();
   }
 
   void searchsong(value) {
     searchConvertAudio.clear();
-    allSongs = SongBox.getInstance().values.toList();
-    searchList = List<Songs>.from(allSongs);
 
+    searchList.clear();
     searchList = allSongs
         .where((element) => element.songname!
             .toLowerCase()
@@ -184,33 +230,5 @@ class HomeProvider extends ChangeNotifier {
       ));
     }
     notifyListeners();
-  }
-
-  void viewAllPlaylists() {
-    playlistsongdb = PlaylistBox.getInstance().values.toList();
-    notifyListeners();
-  }
-
-  convertPlaylistSongs(index) {
-    final playlistbox = PlaylistBox.getInstance();
-    List<PlayListDb> playlistsong = playlistbox.values.toList();
-    _plalistSongsConvertAudio.clear();
-    for (var element in playlistsong[index].playlistsongs!) {
-      _plalistSongsConvertAudio.add(
-        Audio.file(
-          element.songurl!,
-          metas: Metas(
-              title: element.songname,
-              artist: element.artist,
-              id: element.id.toString()),
-        ),
-      );
-    }
-  }
-
-  viewPlaylistAllSongs(index) {
-    final _playBox = PlaylistBox.getInstance();
-    List<PlayListDb> _playlistsong = _playBox.values.toList();
-    playsong = _playlistsong[index].playlistsongs!;
   }
 }

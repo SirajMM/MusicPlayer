@@ -1,10 +1,14 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:blaze_player/presentation/home/home_screen.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
+import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
+import '../application/playlist_all_songs_provider/playlist_all_songs.dart';
 import '../db/functions/db_functions.dart';
 import '../db/model/playlistmodel.dart';
 import '../db/model/songmodel.dart';
@@ -238,132 +242,6 @@ bottomSheet(BuildContext ctx1, songindex) {
   );
 }
 
-// allSongsSheet(BuildContext ctx1, listindex) {
-//   final songbox = SongBox.getInstance();
-//   Widget costemListTile(
-//       {String? titile,
-//       String? singer,
-//       Widget? cover,
-//       index,
-//       playingitem,
-//       context}) {
-//     Map isplayingMap = {};
-//     bool isPlaying = isplayingMap[index] ?? false;
-//     return InkWell(
-//       child: BlurryContainer(
-//         // ignore: prefer_const_constructors
-//         color: Color.fromARGB(11, 58, 13, 219),
-
-//         blur: 100,
-//         borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-//         padding: const EdgeInsets.all(8),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             SizedBox(
-//               height: MediaQuery.of(context).size.height * 0.08,
-//               width: MediaQuery.of(context).size.height * 0.08,
-//               child: cover,
-//             ),
-//             SizedBox(
-//               width: MediaQuery.of(context).size.width * 0.03,
-//             ),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     titile!,
-//                     style: songnamestyle,
-//                     overflow: TextOverflow.ellipsis,
-//                   ),
-//                   SizedBox(
-//                     height: MediaQuery.of(context).size.height * 0.01,
-//                   ),
-//                   Text(
-//                     singer!,
-//                     overflow: TextOverflow.ellipsis,
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const SizedBox(
-//               width: 10,
-//             ),
-//             IconButton(
-//                 onPressed: () {
-//                   // addToPlaylist(index, listindex);
-//                 },
-//                 icon: Icon(isPlaying ? Icons.remove : Icons.add)),
-//             const SizedBox(
-//               width: 10,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   showModalBottomSheet<void>(
-//     context: ctx1,
-//     builder: (BuildContext context) {
-//       return Padding(
-//         padding: const EdgeInsets.only(
-//           top: 22,
-//         ),
-//         child: SingleChildScrollView(
-//           physics: const BouncingScrollPhysics(),
-//           child: ValueListenableBuilder<Box<Songs>>(
-//             valueListenable: songbox.listenable(),
-//             builder: (context, allsongbox, child) {
-//               List<Songs> allDbSongs = allsongbox.values.toList();
-//               var size = MediaQuery.of(context).size;
-//               return Column(
-//                 children: [
-//                   Padding(
-//                     padding: const EdgeInsets.only(top: 10),
-//                     child: Text(
-//                       'All Songs',
-//                       style: homeStyle,
-//                     ),
-//                   ),
-//                   ListView.separated(
-//                       physics: const NeverScrollableScrollPhysics(),
-//                       shrinkWrap: true,
-//                       itemBuilder: (context, index) => costemListTile(
-//                             context: context,
-//                             playingitem: allDbSongs[index],
-//                             index: index,
-//                             singer: allDbSongs[index].artist,
-//                             titile: allDbSongs[index].songname,
-//                             cover: ClipRect(
-//                               child: QueryArtworkWidget(
-//                                   nullArtworkWidget: Image.asset(
-//                                       'asset/images/logon-removebg-preview.png'),
-//                                   artworkBorder: const BorderRadius.all(
-//                                       Radius.circular(16)),
-//                                   artworkHeight: size.height * 0.08,
-//                                   artworkWidth: size.height * 0.08,
-//                                   artworkFit: BoxFit.contain,
-//                                   id: allDbSongs[index].id!,
-//                                   type: ArtworkType.AUDIO),
-//                             ),
-//                             //         );
-//                           ),
-//                       separatorBuilder: (context, index) => const SizedBox(
-//                             height: 10,
-//                           ),
-//                       itemCount: allDbSongs.length)
-//                 ],
-//               );
-//             },
-//           ),
-//         ),
-//       );
-//     },
-//   );
-// }
-
 // ============= Playlist dialogebox ===================
 final TextEditingController textcontroller = TextEditingController();
 createPlaylistDialogebox(BuildContext context) {
@@ -477,5 +355,148 @@ void getLyrics(context) async {
         ]),
   );
 }
- // endDrawer: 
-        // ),
+
+allSongsSheet(BuildContext ctx1, listindex, rheight, songIndex) {
+  final songbox = SongBox.getInstance();
+  showModalBottomSheet<void>(
+    isScrollControlled: true,
+    context: ctx1,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 22, left: 10, right: 10),
+        child: SingleChildScrollView(
+          // physics: const NeverScrollableScrollPhysics(),
+          child: ValueListenableBuilder<Box<Songs>>(
+            valueListenable: songbox.listenable(),
+            builder: (context, allsongbox, child) {
+              List<Songs> allDbSongs = allsongbox.values.toList();
+              var size = MediaQuery.of(context).size;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'All Songs',
+                      style: homeStyle,
+                    ),
+                  ),
+                  ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => costemListTile(
+                            context: context,
+                            playingitem: allDbSongs[index],
+                            songIndex: songIndex,
+                            index: index,
+                            singer: allDbSongs[index].artist,
+                            titile: allDbSongs[index].songname,
+                            listindex: listindex,
+                            cover: ClipRect(
+                              child: QueryArtworkWidget(
+                                  nullArtworkWidget: Image.asset(
+                                      'asset/images/logon-removebg-preview.png'),
+                                  artworkBorder: const BorderRadius.all(
+                                      Radius.circular(16)),
+                                  artworkHeight: size.height * 0.08,
+                                  artworkWidth: size.height * 0.08,
+                                  artworkFit: BoxFit.contain,
+                                  id: allDbSongs[index].id!,
+                                  type: ArtworkType.AUDIO),
+                            ),
+                            //         );
+                          ),
+                      separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                      itemCount: allDbSongs.length)
+                ],
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget costemListTile(
+    {String? titile,
+    String? singer,
+    Widget? cover,
+    playingitem,
+    context,
+    songIndex,
+    index,
+    listindex}) {
+  return InkWell(
+    child: BlurryContainer(
+      // ignore: prefer_const_constructors
+      color: Color.fromARGB(11, 58, 13, 219),
+
+      blur: 100,
+      borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.08,
+            width: MediaQuery.of(context).size.height * 0.08,
+            child: cover,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.03,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  titile!,
+                  style: songnamestyle,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.01,
+                ),
+                Text(
+                  singer!,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Consumer<PlayListSongsProvider>(
+            builder: (context, value, child) => IconButton(
+              onPressed: () {
+                Provider.of<PlayListSongsProvider>(context, listen: false)
+                    .addToPlaylist(
+                        index: index,
+                        playListName: listindex,
+                        playlistindex: songIndex);
+                Provider.of<PlayListSongsProvider>(context, listen: false)
+                    .convertPlaylistSongs(songIndex);
+              },
+              icon: checkSongOnplaylist(index, songIndex)
+                  ? const Icon(
+                      CarbonIcons.music_add,
+                      color: Colors.green,
+                    )
+                  : const Icon(
+                      CarbonIcons.music_remove,
+                      color: Colors.red ,
+                    ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
+      ),
+    ),
+  );
+}

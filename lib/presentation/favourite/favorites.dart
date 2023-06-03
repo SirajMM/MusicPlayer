@@ -7,7 +7,6 @@ import 'package:blaze_player/styles/stile1.dart';
 import 'package:blaze_player/presentation/nowplaying/currentplayingscreen.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +21,7 @@ class FavScreen extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         extendBody: true,
         body: Container(
           height: size.height,
@@ -140,8 +140,8 @@ class FavScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Lottie.network(
-                                  'https://assets9.lottiefiles.com/packages/lf20_khnalzic.json',
+                              Image.asset(
+                                  'asset/images/animation_500_libalyqg.gif',
                                   height: size.height * .25),
                               Text(
                                 "No Liked  songs Found!",
@@ -223,24 +223,6 @@ class FavScreen extends StatelessWidget {
               onPressed: () {
                 Provider.of<HomeProvider>(context, listen: false)
                     .addToFavorite(favsongs1[index].id!, context);
-                ScaffoldMessenger.of(context).clearSnackBars();
-
-                final snackbar = SnackBar(
-                  content: Row(
-                    children: const [
-                      Text('Removed From Favorite '),
-                      Icon(
-                        Icons.favorite_outline,
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                  dismissDirection: DismissDirection.down,
-                  behavior: SnackBarBehavior.floating,
-                  elevation: 30,
-                  duration: Duration(milliseconds: 500),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackbar);
               },
               icon: Icon(Icons.favorite),
             ),

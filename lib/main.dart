@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'application/playlist_all_songs_provider/playlist_all_songs.dart';
+import 'application/playlist_provider/playlist_provider.dart';
 import 'db/functions/db_functions.dart';
 import 'db/model/favoritemodel.dart';
 import 'db/model/mostlyplayedmodel.dart';
@@ -36,15 +38,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => SplashProvider(),
-        ),
+        ChangeNotifierProvider(create: (context) => SplashProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
+        ChangeNotifierProvider(create: (context) => PlalistProvider()),
+        ChangeNotifierProvider(create: (context) => PlayListSongsProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          appBarTheme: const AppBarTheme(foregroundColor: Colors.black),
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+              foregroundColor: Colors.black, backgroundColor: Colors.white),
           useMaterial3: true,
         ),
         home: const SplashScreen(),

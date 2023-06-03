@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers, unnecessary_null_comparison, must_be_immutable
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:blaze_player/application/homeprovider/home_provider.dart';
 import 'package:blaze_player/presentation/playlistsongs/playlistfullsongs.dart';
 import 'package:blaze_player/styles/stile1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../application/playlist_provider/playlist_provider.dart';
 import '../../db/functions/db_functions.dart';
 import '../miniplayer/miniplayer.dart';
 
@@ -20,7 +20,7 @@ class MyLibrary extends StatelessWidget {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<HomeProvider>(context, listen: false).viewAllPlaylists();
+      Provider.of<PlalistProvider>(context, listen: false).viewAllPlaylists();
     });
     return Scaffold(
       body: SizedBox(
@@ -49,9 +49,16 @@ class MyLibrary extends StatelessWidget {
                         height: size.height * 0.085,
                         width: size.width * 0.18,
                         decoration: BoxDecoration(
-                            color: buttoncolor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15))),
+                          color: buttoncolor,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 5,
+                                offset: const Offset(5, 5),
+                                color: Colors.grey.withOpacity(.4)),
+                          ],
+                        ),
                         child: const Icon(
                           Icons.add,
                           color: Colors.white,
@@ -73,7 +80,7 @@ class MyLibrary extends StatelessWidget {
               ),
               // ========= PLAYLIST =========
 
-              Consumer<HomeProvider>(builder: (context, value, child) {
+              Consumer<PlalistProvider>(builder: (context, value, child) {
                 return ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -90,7 +97,7 @@ class MyLibrary extends StatelessWidget {
           ),
         ),
       ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 
@@ -116,6 +123,12 @@ class MyLibrary extends StatelessWidget {
               height: size.height * 0.085,
               width: size.width * 0.18,
               decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 5,
+                        offset: const Offset(5, 5),
+                        color: Colors.grey.withOpacity(.4))
+                  ],
                   image: DecorationImage(
                       image: AssetImage(cover!), fit: BoxFit.cover),
                   borderRadius: const BorderRadius.all(Radius.circular(15))),
@@ -237,7 +250,7 @@ class MyLibrary extends StatelessWidget {
                                     deleteplaylist(index!);
 
                                     Navigator.pop(context, 'Delete');
-                                    Provider.of<HomeProvider>(context,
+                                    Provider.of<PlalistProvider>(context,
                                             listen: false)
                                         .viewAllPlaylists();
                                     const snackbar = SnackBar(
@@ -312,7 +325,7 @@ class MyLibrary extends StatelessWidget {
                 ).show(context);
               } else {
                 createplaylist(textcontroller.text.trim(), context);
-                Provider.of<HomeProvider>(context, listen: false)
+                Provider.of<PlalistProvider>(context, listen: false)
                     .viewAllPlaylists();
 
                 Navigator.pop(context, 'Create');

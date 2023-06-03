@@ -8,7 +8,6 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import '../../db/functions/db_functions.dart';
-import '../../db/model/songmodel.dart';
 import '../../styles/stile1.dart';
 
 class CurrentPlayingScreen extends StatefulWidget {
@@ -27,8 +26,6 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
   bool isPlaying = true;
-
-  final box = SongBox.getInstance();
 
   @override
   void initState() {
@@ -110,7 +107,7 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
             ),
           ),
           Positioned(
-            height: rheight / 1.5,
+            height: rwidth / .67,
             width: rwidth,
             child: Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
@@ -139,7 +136,7 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                     maxLines: 1,
                   ),
                   SizedBox(
-                    height: rheight / 20,
+                    height: rwidth / 8,
                   ),
                   IntrinsicHeight(
                     child: Row(
@@ -252,87 +249,83 @@ class _CurrentPlayingScreenState extends State<CurrentPlayingScreen>
                         Icons.playlist_add,
                         color: Colors.white,
                       )),
-                  IconButton(
-                    icon: (checkFavourite(
+                  Consumer<HomeProvider>(
+                    builder: (context, value, child) => IconButton(
+                      icon: (checkFavourite(
+                              int.parse(playing.audio.audio.metas.id!),
+                              BuildContext))
+                          ? const Icon(
+                              Icons.favorite_border,
+                              color: Colors.white,
+                            )
+                          : Icon(
+                              Icons.favorite,
+                              color: buttoncolor,
+                            ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        if (checkFavourite(
                             int.parse(playing.audio.audio.metas.id!),
-                            BuildContext))
-                        ? const Icon(
-                            Icons.favorite_border,
-                            color: Colors.white,
-                          )
-                        : Icon(
-                            Icons.favorite,
-                            color: buttoncolor,
-                          ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).clearSnackBars();
-                      if (checkFavourite(
-                          int.parse(playing.audio.audio.metas.id!),
-                          BuildContext)) {
-                        Provider.of<HomeProvider>(context).addToFavorite(
-                            int.parse(playing.audio.audio.metas.id!), context);
-                        // addToFavorite(
-                        //     int.parse(playing.audio.audio.metas.id!), context);
+                            BuildContext)) {
+                          Provider.of<HomeProvider>(context, listen: false)
+                              .addToFavorite(
+                                  int.parse(playing.audio.audio.metas.id!),
+                                  context);
 
-                        final snackBar = SnackBar(
-                          backgroundColor: Colors.white,
-                          content: Row(
-                            children: [
-                              const Text(
-                                'Added to favorite ',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.favorite,
-                                color: buttoncolor,
-                              )
-                            ],
-                          ),
-                          dismissDirection: DismissDirection.down,
-                          behavior: SnackBarBehavior.floating,
-                          elevation: 30,
-                          duration: const Duration(seconds: 1),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else if (!checkFavourite(
-                          int.parse(playing.audio.audio.metas.id!),
-                          BuildContext)) {
-                        removeFav(int.parse(playing.audio.audio.metas.id!));
-                        const snackBar = SnackBar(
-                          backgroundColor: Colors.white,
-                          content: Row(
-                            children: [
-                              Text(
-                                'Removed favorite ',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.favorite_border_outlined,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
-                          dismissDirection: DismissDirection.down,
-                          behavior: SnackBarBehavior.floating,
-                          elevation: 30,
-                          duration: Duration(seconds: 1),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }
-                      setState(() {
-                        checkFavourite(int.parse(playing.audio.audio.metas.id!),
-                                BuildContext) !=
-                            checkFavourite(
-                                int.parse(playing.audio.audio.metas.id!),
-                                BuildContext);
-                      });
-                    },
+                          final snackBar = SnackBar(
+                            backgroundColor: Colors.white,
+                            content: Row(
+                              children: [
+                                const Text(
+                                  'Added to favorite ',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(
+                                  Icons.favorite,
+                                  color: buttoncolor,
+                                )
+                              ],
+                            ),
+                            dismissDirection: DismissDirection.down,
+                            behavior: SnackBarBehavior.floating,
+                            elevation: 30,
+                            duration: const Duration(seconds: 1),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          Provider.of<HomeProvider>(context, listen: false)
+                              .addToFavorite(
+                                  int.parse(playing.audio.audio.metas.id!),
+                                  context);
+                          const snackBar = SnackBar(
+                            backgroundColor: Colors.white,
+                            content: Row(
+                              children: [
+                                Text(
+                                  'Removed favorite ',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(
+                                  Icons.favorite_border_outlined,
+                                  color: Colors.black,
+                                )
+                              ],
+                            ),
+                            dismissDirection: DismissDirection.down,
+                            behavior: SnackBarBehavior.floating,
+                            elevation: 30,
+                            duration: Duration(seconds: 1),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

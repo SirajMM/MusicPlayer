@@ -1,14 +1,17 @@
 // ignore_for_file: must_be_immutable, unused_local_variable, sized_box_for_whitespace, use_build_context_synchronously
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:blaze_player/application/homeprovider/home_provider.dart';
 import 'package:blaze_player/styles/stile1.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
+import '../../application/playlist_all_songs_provider/playlist_all_songs.dart';
+import '../../application/playlist_provider/playlist_provider.dart';
 import '../../db/model/playlistmodel.dart';
 import '../../db/model/songmodel.dart';
+import '../../widgets/utlities.dart';
 import '../miniplayer/miniplayer.dart';
 
 class PlaylistSongs extends StatelessWidget {
@@ -26,8 +29,10 @@ class PlaylistSongs extends StatelessWidget {
     double rheight = MediaQuery.of(context).size.height;
     List<PlayListDb> playlistsong = playbox.values.toList();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<HomeProvider>(context, listen: false)
+      Provider.of<PlayListSongsProvider>(context, listen: false)
           .convertPlaylistSongs(songindex);
+      Provider.of<PlayListSongsProvider>(context, listen: false)
+          .viewPlaylistAllSongs(songindex);
     });
     return Scaffold(
       appBar: AppBar(
@@ -39,9 +44,19 @@ class PlaylistSongs extends StatelessWidget {
           style: headingStyle,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () => allSongsSheet(context,
+                  playlistsong[songindex!].playlistname, rheight, songindex),
+              icon: const Icon(
+                Iconsax.music_square_add,
+                size: 30,
+              ))
+        ],
       ),
-      body: Consumer<HomeProvider>(builder: (context, value, child) {
-        value.viewPlaylistAllSongs(songindex);
+      body: Consumer<PlayListSongsProvider>(builder: (context, value, child) {
+        // value.viewPlaylistAllSongs(songindex);
+
         return SizedBox(
           height: rheight,
           child: SingleChildScrollView(
@@ -78,30 +93,7 @@ class PlaylistSongs extends StatelessWidget {
           ),
         );
       }),
-      // floatingActionButton: SizedBox(
-      //   height: 40,
-      //   width: 150,
-      //   child: FloatingActionButton(
-      //     onPressed: () {
-      //       allSongsSheet(
-      //           context, playlistsong[widget.songindex!].playlistsongs);
-      //     },
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       crossAxisAlignment: CrossAxisAlignment.center,
-      //       children: [
-      //         const Icon(
-      //           Icons.add,
-      //         ),
-      //         Text(
-      //           'Add Song',
-      //           style: homeStyle,
-      //         )
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      bottomSheet: const MiniPlayer(),
+      bottomSheet: MiniPlayer(),
     );
   }
 
@@ -114,15 +106,14 @@ class PlaylistSongs extends StatelessWidget {
     context,
     int? playListIndex,
   }) {
-  
     final rheight = MediaQuery.of(context).size.height;
     return InkWell(
       onTap: () {
-       
         audioPlayer.open(
             Playlist(
-                audios: Provider.of<HomeProvider>(context, listen: false)
-                    .plalistSongsConvertAudio,
+                audios:
+                    Provider.of<PlayListSongsProvider>(context, listen: false)
+                        .plalistSongsConvertAudio,
                 startIndex: index),
             headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
             showNotification: true,
@@ -191,9 +182,9 @@ class PlaylistSongs extends StatelessWidget {
             IconButton(
               onPressed: () {
                 playsong.removeAt(index);
-                Provider.of<HomeProvider>(context, listen: false)
+                Provider.of<PlalistProvider>(context, listen: false)
                     .viewAllPlaylists();
-                Provider.of<HomeProvider>(context, listen: false)
+                Provider.of<PlayListSongsProvider>(context, listen: false)
                     .convertPlaylistSongs(playListIndex);
               },
               icon: const Icon(CarbonIcons.music_remove),
